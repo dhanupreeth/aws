@@ -1,0 +1,463 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+
+  CacheClusterId:
+    Type: String
+    Default: "ClusterName"
+    Description: "" 
+
+  NameSpace:
+    Type: String
+    Default: "AWS/ElastiCache"
+    Description: ""
+    
+  EngineCpuMetricName:
+    Type: String
+    Default: "EngineCpuUtilization"
+    Description: ""
+  
+  ThresholdEngineCpuUtilization:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  SwapUsageMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  ThresholdSwapUsage:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  SetTypeCmdsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  ThresholdSetTypeCmds:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  SetTypeCmdsLatencyMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  ThresholdSetTypeCmdsLatency:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  GetTypeCmdsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdGetTypeCmds:
+    Type: String
+    Default: ""
+    Description: ""
+
+  GetTypeCmdsLatencyMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdGetTypeCmdsLatency:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  HashBasedCmdsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdHashBasedCmds:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  HashBasedCmdsLatencyMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdHashBasedCmdsLatency:
+    Type: String
+    Default: ""
+    Description: ""
+
+  KeyBasedCmdsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdKeyBasedCmds: 
+    Type: String
+    Default: ""
+    Description: ""
+  
+  KeyBasedCmdsLatencyMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdKeyBasedCmdsLatency:
+    Type: String
+    Default: ""
+    Description: ""
+
+  NewConnectionsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdNewConnections: 
+    Type: String
+    Default: ""
+    Description: ""
+  
+  MemoryFragmentationRationMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdMemoryFragmentationRation:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  EvictionsMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdEvictions:
+    Type: String
+    Default: ""
+    Description: ""
+  
+  BytesUsedForCacheMetricName:
+    Type: String
+    Default: ""
+    Description: ""
+
+  ThresholdBytesUsedForCache:
+    Type: String
+    Default: ""
+    Description: ""
+
+  CriticalAlarmSnsArn:
+    Type: String
+    Default: "SNS ARN"
+    Description: ""
+  
+
+Resources:
+#<============= Redis Engine CPU Utilization =============>
+  EngineCpuUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-EngineCpuUtilization-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${EngineCpuMetricName}"
+      AlarmActions:
+        - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref EngineCpuMetricName
+      Statistic: Average
+      Period: '300' # The period can be 1, 5, 10, 30, or any multiple of 60.  
+      Threshold: !Ref ThresholdEngineCpuUtilization
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+      - Name: CacheClusterId
+        Value: !Ref CacheClusterId
+
+#<============= Redis Swap Usage =============>
+  SwapUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-swapusage-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${SwapUsageMetricName}"
+      AlarmActions:
+        - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref SwapUsageMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdSwapUsage
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis SetTypeCmds Count =============>
+  SetTypeCmdsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-SetTypeCmds-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${SetTypeCmdsMetricName} The total number of write types of commands."
+      AlarmActions:
+        - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref SetTypeCmdsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdSetTypeCmds
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis SetTypeCmdsLatency =============>
+  SetTypeCmdsLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-SetTypeCmdsLatency-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${SetTypeCmdsLatencyMetricName} Latency of write commands."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref SetTypeCmdsLatencyMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdSetTypeCmdsLatency
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis GetTypeCmds =============>
+
+  GetTypeCmdsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-GetTypeCmds-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${GetTypeCmdsMetricName} The total number of read-only type commands."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn     
+      Namespace: !Ref NameSpace
+      MetricName: !Ref GetTypeCmdsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdGetTypeCmds
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis GetTypeCmdsLatency =============>
+
+  GetTypeCmdsLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-GetTypeCmdsLatency-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${GetTypeCmdsLatencyMetricName} Latency of read commands."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref GetTypeCmdsLatencyMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdGetTypeCmdsLatency
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis HashBasedCmds =============>
+
+  HashBasedCmdsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-HashBasedCmds-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${HashBasedCmdsMetricName} The total number of commands that are hash-based."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn     
+      Namespace: !Ref NameSpace
+      MetricName: !Ref HashBasedCmdsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdHashBasedCmds
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis HashBasedCmdsLatency =============>
+
+  HashBasedCmdsLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-HashBasedCmdsLatency-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${HashBasedCmdsLatencyMetricName} Latency of hash commands."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref HashBasedCmdsLatencyMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdHashBasedCmdsLatency
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis KeyBasedCmds =============>
+
+  KeyBasedCmdsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-KeyBasedCmds-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${KeyBasedCmdsMetricName} The total number of commands that are key-based."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn     
+      Namespace: !Ref NameSpace
+      MetricName: !Ref KeyBasedCmdsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdKeyBasedCmds
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis KeyBasedCmdsLatencyLatency =============>
+
+  KeyBasedCmdsLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-KeyBasedCmdsLatency-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${KeyBasedCmdsLatencyMetricName} Latency of key-based commands."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref KeyBasedCmdsLatencyMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdKeyBasedCmdsLatency
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis NewConnections =============>
+  NewConnectionsAlarm: 
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-NewConnections-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${NewConnectionsMetricName} The total number of connections that have been accepted by the server during this period."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref NewConnectionsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdNewConnections
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis MemoryFragmentationRation =============>
+
+  MemoryFragmentationRationAlarm: 
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-MemoryFragmentationRation-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${MemoryFragmentationRationMetricName} Indicates the efficiency in the allocation of memory of the Redis engine."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref MemoryFragmentationRationMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdMemoryFragmentationRation
+      EvaluationPeriods: 1
+      ComparisonOperator: LessThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis Evictions =============>
+  
+  EvictionsAlarm: 
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-Evictions-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${EvictionsMetricName} The number of keys that have been evicted due to the maxmemory limit."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref EvictionsMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdEvictions
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
+
+#<============= Redis  BytesUsedForCache =============>
+
+  BytesUsedForCacheAlarm: 
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: redis-BytesUsedForCache-alarm
+      AlarmDescription: !Sub "${CacheClusterId}-${BytesUsedForCacheMetricName} The total number of bytes used for cache by memory."
+      AlarmActions:
+       - !Ref CriticalAlarmSnsArn
+      OKActions:
+        - !Ref CriticalAlarmSnsArn
+      Namespace: !Ref NameSpace
+      MetricName: !Ref BytesUsedForCacheMetricName
+      Statistic: Average
+      Period: '300'
+      Threshold: !Ref ThresholdBytesUsedForCache
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: CacheClusterId
+          Value: !Ref CacheClusterId
